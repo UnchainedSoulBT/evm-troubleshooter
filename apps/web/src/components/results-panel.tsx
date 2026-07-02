@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DecodedCallView, DecodedRevertView } from "./decoded-view";
+import { ProbePanel } from "./probe-panel";
 
 export interface DecodedBundle {
   call: DecodedCall | null;
@@ -234,14 +235,24 @@ export function ResultsPanel({
 
   if (results.kind === "simulation") {
     return (
-      <SimulationCard
-        run={{
-          request: results.request,
-          outcome: results.outcome,
-          ...(results.decoded ? { decoded: results.decoded } : {}),
-        }}
-        note={results.note}
-      />
+      <div className="grid gap-6">
+        <SimulationCard
+          run={{
+            request: results.request,
+            outcome: results.outcome,
+            ...(results.decoded ? { decoded: results.decoded } : {}),
+          }}
+          note={results.note}
+        />
+        {results.outcome.status === "revert" ? (
+          <ProbePanel
+            request={results.request}
+            outcome={results.outcome}
+            decodedRevert={results.decoded?.revert ?? null}
+            decodedCall={results.decoded?.call ?? null}
+          />
+        ) : null}
+      </div>
     );
   }
 
