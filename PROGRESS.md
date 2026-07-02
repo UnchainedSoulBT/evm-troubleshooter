@@ -36,14 +36,14 @@ green. Log blockers/decisions inline.
 - [x] 3.4 single-input UI + results panel skeleton — 6e78543 — kind badge, conditional to/from/block fields, sim/tx/replay cards; chain-mismatch warning for raw txs; fixed Mono swallowing data-testid (e2e caught it); verified live in browser vs mainnet via proxy
 - [x] GATE: known tx renders; latest eth_call correct; historical replay pins to block — CI green (checks ✓, fork-e2e ✓: 12 Playwright tests incl. fork-backed tx render/replay/revert flows, 7 fork tests, 56 unit tests); revert flow also verified live vs mainnet in browser
 
-## Phase 4 — Decoding subsystem — [ ] in progress
+## Phase 4 — Decoding subsystem — [x] complete
 - [x] 4.1 `decodeFunctionData` — a46496a — resolution order user ABI → builtin seed → selector-DB candidates; all selectors computed from signature strings at module init (never hardcoded hex); canonical tuple signatures
 - [x] 4.2 revert decoder (Error/Panic/custom) — a46496a — Error(string), Panic(uint256) w/ Solidity panic map, custom via ABI/builtin (OZ v5 ERC-6093 set)/selector DB; graceful `empty` and `unknown` kinds
 - [x] 4.3 selector DB fallback (openchain, proxied) — 4766389 — GET /api/selectors/:kind/:selector, 7-day cache; errors share the 4-byte space so one openchain endpoint serves both
 - [x] 4.4 ABI resolution chain + cache — 4766389/2a7d02d — proxy GET /api/abi/:chainId/:address does Sourcify → Etherscan V2 (server-side key, tested to never leak into responses); client caches in-memory and accepts pasted JSON or human-readable signatures
 - [x] 4.5 container unpackers — a46496a — multicall ×3 arities, Safe execTransaction (to/value carried), Multicall3 aggregate/aggregate3/aggregate3Value, EVC batch; Permit2 permit decodes via builtin signature (nothing to expand — it has no sub-call bytes); recursion depth-capped at 5
 - [x] 4.6 Decoded tab UI — 2a7d02d — tabs on sim + tx cards (Decoded default), recursive sub-call tree with target/value, decoded revert w/ args table, candidates list, optional ABI textarea; e2e rate-limit env raised for parallel workers sharing one IP
-- [ ] GATE: three §8 decode fixtures pass; unknown selectors show candidates
+- [x] GATE: three §8 decode fixtures pass; unknown selectors show candidates — CI green; §8 fixtures covered: require-string revert (decoding.spec revert message), OZ custom error (revert.test builtin ERC20InsufficientAllowance), multicall expansion (decoding.spec 2 sub-calls); unknown selectors surface candidates (calldata.test + decoded-view)
 
 ## Phase 5 — State overrides & probes — [ ] not started
 - [ ] 5.1 `overrides.ts` builders (balance/nonce/code/storage)
