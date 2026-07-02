@@ -13,3 +13,7 @@ export {
   type ChainTarget,
   type CustomChainConfig,
 } from "./chains/client.js";
+export {
+  probeCapabilities,
+  type ChainCapabilities,
+} from "./chains/capabilities.js";

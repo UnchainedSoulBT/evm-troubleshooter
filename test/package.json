@@ -11,5 +11,8 @@
   "devDependencies": {
     "@playwright/test": "^1",
     "@types/node": "^22"
+  },
+  "dependencies": {
+    "@evm-troubleshooter/core": "workspace:*"
   }
 }

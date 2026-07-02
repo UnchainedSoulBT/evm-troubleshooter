@@ -111,6 +111,10 @@ importers:
         version: 2.54.1(typescript@5.9.3)(zod@4.4.3)
 
   test:
+    dependencies:
+      '@evm-troubleshooter/core':
+        specifier: workspace:*
+        version: link:../packages/core
     devDependencies:
       '@playwright/test':
         specifier: ^1
