@@ -22,12 +22,12 @@ green. Log blockers/decisions inline.
 - [x] 1.4 UI chain switcher + add custom chain/RPC form + persist — b29cc51 — localStorage via useSyncExternalStore (React Compiler lint forbids sync setState in effects); e2e proves persistence + accurate badges against a real local anvil; switched repo to extensionless relative imports for Turbopack
 - [x] GATE: chain switch reconnects; custom RPC works; badges accurate — CI green (checks ✓, fork-e2e ✓: mocked-transport unit tests, anvil-fork probe, live ETH smoke, Playwright e2e incl. real-anvil custom chain + persistence); visual check in browser OK (badges truthful for publicnode: trace/archive off, estimateGas on)
 
-## Phase 2 — RPC proxy (secure gateway) — [ ] in progress
+## Phase 2 — RPC proxy (secure gateway) — [x] complete
 - [x] 2.1 serverless handler + method allowlist — d9f71bc — Hono createApp(deps) with injectable fetch/env/clock; allowlist extended beyond PLAN's list with read-only methods the app needs (eth_chainId/blockNumber/getStorageAt/getLogs/gasPrice/feeHistory/maxPriorityFeePerGas/web3_clientVersion); batch requests rejected; JSON-RPC-shaped errors
 - [x] 2.2 per-IP rate limit — d9f71bc — token bucket (default 120/min, burst 30, env-tunable); per-instance in serverless (noted: global limit scales with instances, fine as v1 abuse brake); 429 + Retry-After
 - [x] 2.3 cache for immutable reads — d9f71bc — LRU+TTL; only mined txs/receipts and block-pinned code/blocks cache; latest/pending and unmined never cache; x-proxy-cache header
 - [x] 2.4 provider keys via env; client → proxy by default; BYO-RPC bypass — 02d3ffa — RPC_URL_<chainId> server-side overrides; proxy mounted into web via hono/vercel (single Vercel deploy); registry chains → /api/rpc/:chainId, custom chains direct; verbatim relay ?url= has an SSRF guard (private ranges blocked unless ALLOW_PRIVATE_RPC=1); bundle-secret script verified to both pass clean and catch a planted canary
-- [ ] GATE: disallowed method rejected; 429 past threshold; no keys in bundle
+- [x] GATE: disallowed method rejected; 429 past threshold; no keys in bundle — CI green: 43 proxy unit tests (allowlist/429/cache-hit-no-upstream/SSRF), e2e proves the mounted route rejects eth_accounts (403) and blocks SSRF, bundle-secret check passes clean AND was negative-tested against a planted canary
 
 ## Phase 3 — Read & replay core — [ ] not started
 - [ ] 3.1 tx-hash lookup → tx + receipt render
