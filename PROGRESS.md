@@ -29,11 +29,11 @@ green. Log blockers/decisions inline.
 - [x] 2.4 provider keys via env; client → proxy by default; BYO-RPC bypass — 02d3ffa — RPC_URL_<chainId> server-side overrides; proxy mounted into web via hono/vercel (single Vercel deploy); registry chains → /api/rpc/:chainId, custom chains direct; verbatim relay ?url= has an SSRF guard (private ranges blocked unless ALLOW_PRIVATE_RPC=1); bundle-secret script verified to both pass clean and catch a planted canary
 - [x] GATE: disallowed method rejected; 429 past threshold; no keys in bundle — CI green: 43 proxy unit tests (allowlist/429/cache-hit-no-upstream/SSRF), e2e proves the mounted route rejects eth_accounts (403) and blocks SSRF, bundle-secret check passes clean AND was negative-tested against a planted canary
 
-## Phase 3 — Read & replay core — [ ] not started
-- [ ] 3.1 tx-hash lookup → tx + receipt render
-- [ ] 3.2 input auto-detect (hash | calldata | JSON)
-- [ ] 3.3 `simulateCall` via eth_call with optional blockNumber
-- [ ] 3.4 single-input UI + results panel skeleton
+## Phase 3 — Read & replay core — [ ] in progress
+- [x] 3.1 tx-hash lookup → tx + receipt render — 4ffe487 — fetchTransaction (null for unknown hash, null receipt while pending); replayRequestFromTx pins to parent block N−1 (eth_call at N sees post-block state; exact intra-block position replay intentionally out of scope)
+- [x] 3.2 input auto-detect (hash | calldata | JSON) — a8bf16c — plus signed raw tx (viem parseTransaction, signature required, RLP chainId extracted); JSON request accepts hex+decimal numerics
+- [x] 3.3 `simulateCall` via eth_call with optional blockNumber — 4ffe487 — raw revert data dug from viem's error chain (code 3 / data / cause walk); requestFromRawTx recovers `from` and drops stale fee fields (§5.3 battle rules); fork-proven: USDC read, no-allowance revert (§8.1 precursor), pinned replay, graceful deep-history error
+- [x] 3.4 single-input UI + results panel skeleton — 6e78543 — kind badge, conditional to/from/block fields, sim/tx/replay cards; chain-mismatch warning for raw txs; fixed Mono swallowing data-testid (e2e caught it); verified live in browser vs mainnet via proxy
 - [ ] GATE: known tx renders; latest eth_call correct; historical replay pins to block
 
 ## Phase 4 — Decoding subsystem — [ ] not started
