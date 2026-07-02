@@ -49,6 +49,19 @@ export {
   type ProbeResult,
   type ProbeSuggestion,
 } from "./probes";
+export {
+  writableFunctions,
+  parseArgInput,
+  encodeCall,
+  type EncodeResult,
+  type ParseResult,
+} from "./build";
+export {
+  preflight,
+  type PreflightCheck,
+  type PreflightReport,
+  type PreflightRequest,
+} from "./preflight";
 export { traceCall, assetDiffFromPrestate } from "./trace/trace";
 export { normalizeCallTracer, normalizeParityTrace } from "./trace/normalize";
 export type {

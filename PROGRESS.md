@@ -52,12 +52,12 @@ green. Log blockers/decisions inline.
 - [x] 5.4 probe builder UI (balanceOf/allowance/transferFrom) + auto-suggest — 7e4f931 — read probes + prove-the-fix; suggestions derived from decoded revert (OZ custom errors + require-strings); transferFrom allowance owner correctly read from calldata arg0
 - [x] GATE: override flips transferFrom revert→success; probes correct — fork test (overrides.fork) + e2e (probes.spec) both prove §8 scenario 2: decoded no-allowance revert → suggested allowance override → re-sim succeeds
 
-## Phase 6 — Trace tree & asset diff — [ ] in progress
+## Phase 6 — Trace tree & asset diff — [x] complete
 - [x] 6.1 debug_traceCall callTracer → tree model — 99795e4 — geth callTracer (+withLog) and parity trace_call both normalize into one TraceNode tree; reverts bubble up
 - [x] 6.2 reverting node highlight + decoded error inline — 68d40cf — recursive TraceView flags nodes with data-reverted; error/revertReason shown inline
 - [x] 6.3 prestateTracer diff → asset diff view — 99795e4+68d40cf — assetDiffFromPrestate (native balance deltas); AssetDiffView table with +/- coloring; ERC-20 log-derived deltas deferred (native covers §8.4)
 - [x] 6.4 graceful fallback to eth_call + capability badge — 68d40cf — source none → dashed "trace unavailable" panel; sim pass/fail always available; capability badges already reflect trace support (Phase 1)
-- [ ] GATE: nested tree flags reverting leg; asset diff shows deltas; degrades cleanly
+- [x] GATE: nested tree flags reverting leg; asset diff shows deltas; degrades cleanly — CI green (checks ✓, fork-e2e ✓); trace.fork proves reverting-leg flag on real fork; trace.spec proves UI tree + asset-diff tab (§8.4); degrade path verified live (publicnode reports trace off → dashed unavailable panel)
 
 ## Phase 7 — Build call & broadcast — [ ] not started
 - [ ] 7.1 ABI-driven encode form + per-arg validation
