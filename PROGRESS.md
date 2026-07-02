@@ -15,12 +15,12 @@ green. Log blockers/decisions inline.
 - [x] 0.7 base README — c5e4051 — overview, dev setup, security model
 - [x] GATE: `pnpm i && pnpm build && pnpm test` green in CI; Anvil fork boots — CI run 28601207810 (checks ✓, fork-e2e ✓ incl. Anvil mainnet-fork boot + Playwright smoke) — repo: github.com/UnchainedSoulBT/evm-troubleshooter
 
-## Phase 1 — Chain registry & RPC capability — [ ] in progress
+## Phase 1 — Chain registry & RPC capability — [x] complete
 - [x] 1.1 `chains.ts` registry seeded with top-10 (ETH default) — 45ae632 — registry.json (single editable file) + lookup/explorer-url helpers; RPCs re-researched from public sources (prior art inaccessible)
 - [x] 1.2 `createClientForChain(chainId | customRpc)` — 43cea8d — BYO-RPC merges registry metadata for known chainIds; UnknownChainError for unknown numeric ids
 - [x] 1.3 capability probe → { archive, debug, estimateGas } — a34ff8d — archive probed at latest−10k blocks (block 1 was wrong: anvil forks of full nodes legitimately lack deep state); probe never throws; anvil-fork + live-ETH smoke tests included
 - [x] 1.4 UI chain switcher + add custom chain/RPC form + persist — b29cc51 — localStorage via useSyncExternalStore (React Compiler lint forbids sync setState in effects); e2e proves persistence + accurate badges against a real local anvil; switched repo to extensionless relative imports for Turbopack
-- [ ] GATE: chain switch reconnects; custom RPC works; badges accurate
+- [x] GATE: chain switch reconnects; custom RPC works; badges accurate — CI green (checks ✓, fork-e2e ✓: mocked-transport unit tests, anvil-fork probe, live ETH smoke, Playwright e2e incl. real-anvil custom chain + persistence); visual check in browser OK (badges truthful for publicnode: trace/archive off, estimateGas on)
 
 ## Phase 2 — RPC proxy (secure gateway) — [ ] not started
 - [ ] 2.1 serverless handler + method allowlist
