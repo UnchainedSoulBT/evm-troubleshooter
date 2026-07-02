@@ -45,19 +45,19 @@ green. Log blockers/decisions inline.
 - [x] 4.6 Decoded tab UI — 2a7d02d — tabs on sim + tx cards (Decoded default), recursive sub-call tree with target/value, decoded revert w/ args table, candidates list, optional ABI textarea; e2e rate-limit env raised for parallel workers sharing one IP
 - [x] GATE: three §8 decode fixtures pass; unknown selectors show candidates — CI green; §8 fixtures covered: require-string revert (decoding.spec revert message), OZ custom error (revert.test builtin ERC20InsufficientAllowance), multicall expansion (decoding.spec 2 sub-calls); unknown selectors surface candidates (calldata.test + decoded-view)
 
-## Phase 5 — State overrides & probes — [x] complete
+## Phase 5 — State overrides & probes — [x] complete (gate green in CI run after 7e4f931)
 - [x] 5.1 `overrides.ts` builders (balance/nonce/code/storage) — dec0b4e — plus mergeOverrides (per-address dedup)
 - [x] 5.2 wire stateOverride into simulate/estimateGas — dec0b4e — SimulateRequest.stateOverride typed as core StateOverrideEntry[]; mapped to viem's stateDiff-XOR-state shape at the call boundary
 - [x] 5.3 ERC-20 slot helpers + manual-slot fallback — dec0b4e — solidity+vyper mapping/nested-mapping slot math; findErc20Slot discovers the slot by probing a magic value through an override (never mutates chain); UI surfaces a manual-slot fallback message when discovery fails
 - [x] 5.4 probe builder UI (balanceOf/allowance/transferFrom) + auto-suggest — 7e4f931 — read probes + prove-the-fix; suggestions derived from decoded revert (OZ custom errors + require-strings); transferFrom allowance owner correctly read from calldata arg0
 - [x] GATE: override flips transferFrom revert→success; probes correct — fork test (overrides.fork) + e2e (probes.spec) both prove §8 scenario 2: decoded no-allowance revert → suggested allowance override → re-sim succeeds
 
-## Phase 6 — Trace tree & asset diff — [ ] not started
-- [ ] 6.1 debug_traceCall callTracer → tree model
-- [ ] 6.2 reverting node highlight + decoded error inline
-- [ ] 6.3 prestateTracer diff → asset diff view
-- [ ] 6.4 graceful fallback to eth_call + capability badge
-- [ ] GATE: nested multicall tree flags reverting leg; asset diff shows deltas; degrades cleanly
+## Phase 6 — Trace tree & asset diff — [ ] in progress
+- [x] 6.1 debug_traceCall callTracer → tree model — 99795e4 — geth callTracer (+withLog) and parity trace_call both normalize into one TraceNode tree; reverts bubble up
+- [x] 6.2 reverting node highlight + decoded error inline — 68d40cf — recursive TraceView flags nodes with data-reverted; error/revertReason shown inline
+- [x] 6.3 prestateTracer diff → asset diff view — 99795e4+68d40cf — assetDiffFromPrestate (native balance deltas); AssetDiffView table with +/- coloring; ERC-20 log-derived deltas deferred (native covers §8.4)
+- [x] 6.4 graceful fallback to eth_call + capability badge — 68d40cf — source none → dashed "trace unavailable" panel; sim pass/fail always available; capability badges already reflect trace support (Phase 1)
+- [ ] GATE: nested tree flags reverting leg; asset diff shows deltas; degrades cleanly
 
 ## Phase 7 — Build call & broadcast — [ ] not started
 - [ ] 7.1 ABI-driven encode form + per-arg validation
