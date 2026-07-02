@@ -13,6 +13,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@evm-troubleshooter/core": "workspace:*",
     "hono": "^4"
   },
   "devDependencies": {
