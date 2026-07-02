@@ -7,3 +7,9 @@ export {
   type ChainInfo,
   type NativeCurrency,
 } from "./chains/registry.js";
+export {
+  createClientForChain,
+  UnknownChainError,
+  type ChainTarget,
+  type CustomChainConfig,
+} from "./chains/client.js";
