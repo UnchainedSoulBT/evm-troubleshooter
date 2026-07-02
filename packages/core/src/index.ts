@@ -1,4 +1,22 @@
-export { isHexData, detectInputKind, type InputKind } from "./input";
+export {
+  isHexData,
+  detectInput,
+  detectInputKind,
+  type DetectedInput,
+  type InputKind,
+  type JsonCallRequest,
+} from "./input";
+export {
+  simulateCall,
+  requestFromRawTx,
+  type SimulateOutcome,
+  type SimulateRequest,
+} from "./simulate";
+export {
+  fetchTransaction,
+  replayRequestFromTx,
+  type FetchedTransaction,
+} from "./tx";
 export {
   CHAINS,
   DEFAULT_CHAIN_ID,
