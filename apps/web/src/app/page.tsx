@@ -1,4 +1,5 @@
 import { ChainSwitcher } from "@/components/chain-switcher";
+import { Troubleshooter } from "@/components/troubleshooter";
 import { ChainProvider } from "@/lib/chain-context";
 
 export default function Home() {
@@ -14,11 +15,7 @@ export default function Home() {
           </div>
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
-          <p className="text-muted-foreground">
-            Paste a transaction hash, raw calldata, or a signed raw transaction
-            to simulate it, decode it, and find out why it fails. (Input box
-            lands in Phase 3.)
-          </p>
+          <Troubleshooter />
         </main>
       </div>
     </ChainProvider>

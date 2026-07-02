@@ -68,7 +68,9 @@ describe("fetchTransaction", () => {
 
     const fetched = await fetchTransaction(client, HASH);
     expect(fetched).not.toBeNull();
-    expect(fetched?.tx.from.toLowerCase()).toBe("0x000000000000000000000000000000000000dead");
+    expect(fetched?.tx.from.toLowerCase()).toBe(
+      "0x000000000000000000000000000000000000dead",
+    );
     expect(fetched?.receipt?.status).toBe("reverted");
   });
 
@@ -106,7 +108,9 @@ describe("replayRequestFromTx", () => {
     const fetched = await fetchTransaction(client, HASH);
     const req = replayRequestFromTx(fetched!.tx);
     expect(req.blockNumber).toBe(18_000_000n - 1n);
-    expect(req.from?.toLowerCase()).toBe("0x000000000000000000000000000000000000dead");
+    expect(req.from?.toLowerCase()).toBe(
+      "0x000000000000000000000000000000000000dead",
+    );
     expect(req.data).toBe("0xa9059cbb");
   });
 });

@@ -1,7 +1,4 @@
-import {
-  createClientForChain,
-  simulateCall,
-} from "@evm-troubleshooter/core";
+import { createClientForChain, simulateCall } from "@evm-troubleshooter/core";
 import { encodeFunctionData, erc20Abi, hexToBigInt } from "viem";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { rpc, startAnvil, type AnvilInstance } from "./anvil";

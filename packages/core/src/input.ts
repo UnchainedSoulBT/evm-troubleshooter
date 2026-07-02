@@ -7,11 +7,7 @@ import {
 } from "viem";
 
 export type InputKind =
-  | "txHash"
-  | "calldata"
-  | "rawTx"
-  | "jsonRequest"
-  | "unknown";
+  "txHash" | "calldata" | "rawTx" | "jsonRequest" | "unknown";
 
 export interface JsonCallRequest {
   from?: Address;

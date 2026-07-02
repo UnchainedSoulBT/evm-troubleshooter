@@ -24,7 +24,8 @@ function mockClient(handler: Handler): PublicClient {
 describe("simulateCall", () => {
   it("returns success with return data", async () => {
     const client = mockClient((method) => {
-      if (method === "eth_call") return "0x0000000000000000000000000000000000000000000000000000000000000001";
+      if (method === "eth_call")
+        return "0x0000000000000000000000000000000000000000000000000000000000000001";
       throw new Error(`unexpected ${method}`);
     });
     const outcome = await simulateCall(client, {
@@ -112,7 +113,9 @@ describe("requestFromRawTx", () => {
 
     const req = await requestFromRawTx(raw);
     expect(req.from).toBe(account.address);
-    expect(req.to.toLowerCase()).toBe("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48");
+    expect(req.to.toLowerCase()).toBe(
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    );
     expect(req.data).toBe("0xa9059cbb");
     expect(req.value).toBe(123n);
     // stale fee fields must NOT be carried over (fresh fees are fetched
