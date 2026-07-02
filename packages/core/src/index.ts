@@ -49,6 +49,15 @@ export {
   type ProbeResult,
   type ProbeSuggestion,
 } from "./probes";
+export { traceCall, assetDiffFromPrestate } from "./trace/trace";
+export { normalizeCallTracer, normalizeParityTrace } from "./trace/normalize";
+export type {
+  TraceNode,
+  TraceLog,
+  TraceResult,
+  TraceSource,
+  AssetDelta,
+} from "./trace/types";
 export {
   CHAINS,
   DEFAULT_CHAIN_ID,

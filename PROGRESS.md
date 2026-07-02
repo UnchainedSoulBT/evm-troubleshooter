@@ -45,7 +45,7 @@ green. Log blockers/decisions inline.
 - [x] 4.6 Decoded tab UI — 2a7d02d — tabs on sim + tx cards (Decoded default), recursive sub-call tree with target/value, decoded revert w/ args table, candidates list, optional ABI textarea; e2e rate-limit env raised for parallel workers sharing one IP
 - [x] GATE: three §8 decode fixtures pass; unknown selectors show candidates — CI green; §8 fixtures covered: require-string revert (decoding.spec revert message), OZ custom error (revert.test builtin ERC20InsufficientAllowance), multicall expansion (decoding.spec 2 sub-calls); unknown selectors surface candidates (calldata.test + decoded-view)
 
-## Phase 5 — State overrides & probes — [ ] in progress
+## Phase 5 — State overrides & probes — [x] complete
 - [x] 5.1 `overrides.ts` builders (balance/nonce/code/storage) — dec0b4e — plus mergeOverrides (per-address dedup)
 - [x] 5.2 wire stateOverride into simulate/estimateGas — dec0b4e — SimulateRequest.stateOverride typed as core StateOverrideEntry[]; mapped to viem's stateDiff-XOR-state shape at the call boundary
 - [x] 5.3 ERC-20 slot helpers + manual-slot fallback — dec0b4e — solidity+vyper mapping/nested-mapping slot math; findErc20Slot discovers the slot by probing a magic value through an override (never mutates chain); UI surfaces a manual-slot fallback message when discovery fails
