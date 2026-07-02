@@ -2,6 +2,7 @@ import { Hono, type Context } from "hono";
 import { isMethodAllowed } from "./allowlist";
 import { cacheKey, createCache, isCacheable } from "./cache";
 import { createRateLimiter } from "./rate-limit";
+import { registerServices } from "./services";
 import { isRelayUrlAllowed, resolveUpstream } from "./upstream";
 
 export interface ProxyDeps {
@@ -52,6 +53,8 @@ export function createApp(deps: ProxyDeps = {}) {
   const app = new Hono().basePath("/api");
 
   app.get("/health", (c) => c.json({ ok: true }));
+
+  registerServices(app, { fetchFn, env, now });
 
   async function relay(c: Context, upstream: string) {
     const ip =
