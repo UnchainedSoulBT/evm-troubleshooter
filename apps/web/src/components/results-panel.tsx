@@ -1,11 +1,13 @@
 "use client";
 
 import type {
+  AssetDelta,
   DecodedCall,
   DecodedRevert,
   FetchedTransaction,
   SimulateOutcome,
   SimulateRequest,
+  TraceResult,
 } from "@evm-troubleshooter/core";
 import { formatEther } from "viem";
 import { Badge } from "@/components/ui/badge";
@@ -20,16 +22,23 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DecodedCallView, DecodedRevertView } from "./decoded-view";
 import { ProbePanel } from "./probe-panel";
+import { AssetDiffView, TraceView } from "./trace-view";
 
 export interface DecodedBundle {
   call: DecodedCall | null;
   revert: DecodedRevert | null;
 }
 
+export interface TraceBundle {
+  trace: TraceResult;
+  assetDiff: AssetDelta[];
+}
+
 export interface SimulationRun {
   request: SimulateRequest;
   outcome: SimulateOutcome;
   decoded?: DecodedBundle;
+  traceBundle?: TraceBundle;
 }
 
 export type Results =
@@ -45,6 +54,7 @@ export type Results =
       request: SimulateRequest;
       outcome: SimulateOutcome;
       decoded?: DecodedBundle;
+      traceBundle?: TraceBundle;
       note?: string;
     };
 
@@ -181,22 +191,46 @@ function SimulationCard({ run, note }: { run: SimulationRun; note?: string }) {
         ) : null}
       </CardHeader>
       <CardContent>
-        {run.decoded ? (
-          <Tabs defaultValue="decoded">
+        {run.decoded || run.traceBundle ? (
+          <Tabs defaultValue={run.decoded ? "decoded" : "result"}>
             <TabsList>
-              <TabsTrigger value="decoded" data-testid="tab-decoded">
-                Decoded
-              </TabsTrigger>
+              {run.decoded ? (
+                <TabsTrigger value="decoded" data-testid="tab-decoded">
+                  Decoded
+                </TabsTrigger>
+              ) : null}
               <TabsTrigger value="result" data-testid="tab-result">
                 Result
               </TabsTrigger>
+              {run.traceBundle ? (
+                <TabsTrigger value="trace" data-testid="tab-trace">
+                  Trace
+                </TabsTrigger>
+              ) : null}
+              {run.traceBundle ? (
+                <TabsTrigger value="assets" data-testid="tab-assets">
+                  Asset Diff
+                </TabsTrigger>
+              ) : null}
             </TabsList>
-            <TabsContent value="decoded" className="pt-2">
-              <DecodedSection decoded={run.decoded} />
-            </TabsContent>
+            {run.decoded ? (
+              <TabsContent value="decoded" className="pt-2">
+                <DecodedSection decoded={run.decoded} />
+              </TabsContent>
+            ) : null}
             <TabsContent value="result" className="pt-2">
               {body}
             </TabsContent>
+            {run.traceBundle ? (
+              <TabsContent value="trace" className="pt-2">
+                <TraceView trace={run.traceBundle.trace} />
+              </TabsContent>
+            ) : null}
+            {run.traceBundle ? (
+              <TabsContent value="assets" className="pt-2">
+                <AssetDiffView diffs={run.traceBundle.assetDiff} />
+              </TabsContent>
+            ) : null}
           </Tabs>
         ) : (
           body
@@ -241,6 +275,9 @@ export function ResultsPanel({
             request: results.request,
             outcome: results.outcome,
             ...(results.decoded ? { decoded: results.decoded } : {}),
+            ...(results.traceBundle
+              ? { traceBundle: results.traceBundle }
+              : {}),
           }}
           note={results.note}
         />

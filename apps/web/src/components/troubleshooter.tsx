@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  assetDiffFromPrestate,
   createClientForChain,
   decodeCalldata,
   decodeRevert,
@@ -9,6 +10,7 @@ import {
   replayRequestFromTx,
   requestFromRawTx,
   simulateCall,
+  traceCall,
   type DetectedInput,
   type FetchedTransaction,
   type SimulateOutcome,
@@ -118,9 +120,19 @@ export function Troubleshooter() {
   }
 
   async function simulate(request: SimulateRequest) {
-    const outcome = await simulateCall(client(), request);
+    const c = client();
+    const [outcome, trace, assetDiff] = await Promise.all([
+      simulateCall(c, request),
+      traceCall(c, request),
+      assetDiffFromPrestate(c, request),
+    ]);
     const decoded = await decodeAll(request.data, request.to, outcome);
-    return { request, outcome, decoded };
+    return {
+      request,
+      outcome,
+      decoded,
+      traceBundle: { trace, assetDiff },
+    };
   }
 
   async function run() {
