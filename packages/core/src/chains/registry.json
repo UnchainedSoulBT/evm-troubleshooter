@@ -1,0 +1,74 @@
+{
+  "chains": [
+    {
+      "chainId": 1,
+      "name": "Ethereum",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://ethereum-rpc.publicnode.com",
+      "explorerUrl": "https://etherscan.io"
+    },
+    {
+      "chainId": 42161,
+      "name": "Arbitrum One",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://arb1.arbitrum.io/rpc",
+      "explorerUrl": "https://arbiscan.io"
+    },
+    {
+      "chainId": 10,
+      "name": "OP Mainnet",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://mainnet.optimism.io",
+      "explorerUrl": "https://optimistic.etherscan.io"
+    },
+    {
+      "chainId": 8453,
+      "name": "Base",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://mainnet.base.org",
+      "explorerUrl": "https://basescan.org"
+    },
+    {
+      "chainId": 137,
+      "name": "Polygon PoS",
+      "nativeCurrency": { "name": "POL", "symbol": "POL", "decimals": 18 },
+      "rpcUrl": "https://polygon-rpc.com",
+      "explorerUrl": "https://polygonscan.com"
+    },
+    {
+      "chainId": 56,
+      "name": "BNB Smart Chain",
+      "nativeCurrency": { "name": "BNB", "symbol": "BNB", "decimals": 18 },
+      "rpcUrl": "https://bsc-dataseed.bnbchain.org",
+      "explorerUrl": "https://bscscan.com"
+    },
+    {
+      "chainId": 43114,
+      "name": "Avalanche C-Chain",
+      "nativeCurrency": { "name": "AVAX", "symbol": "AVAX", "decimals": 18 },
+      "rpcUrl": "https://api.avax.network/ext/bc/C/rpc",
+      "explorerUrl": "https://snowtrace.io"
+    },
+    {
+      "chainId": 59144,
+      "name": "Linea",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://rpc.linea.build",
+      "explorerUrl": "https://lineascan.build"
+    },
+    {
+      "chainId": 534352,
+      "name": "Scroll",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://rpc.scroll.io",
+      "explorerUrl": "https://scrollscan.com"
+    },
+    {
+      "chainId": 324,
+      "name": "zkSync Era",
+      "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+      "rpcUrl": "https://mainnet.era.zksync.io",
+      "explorerUrl": "https://explorer.zksync.io"
+    }
+  ]
+}
