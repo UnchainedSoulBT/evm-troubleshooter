@@ -1,0 +1,26 @@
+# deps
+node_modules/
+
+# builds
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# deploy
+.vercel/
+
+# misc
+.DS_Store
+*.log
