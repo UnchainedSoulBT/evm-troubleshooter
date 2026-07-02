@@ -11,9 +11,7 @@ function jsonRpc(method: string, params: unknown[] = [], id: unknown = 1) {
   };
 }
 
-function upstreamMock(
-  handler: (method: string, params: unknown[]) => unknown,
-) {
+function upstreamMock(handler: (method: string, params: unknown[]) => unknown) {
   return vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
     const req = JSON.parse(String(init?.body)) as {
       id: unknown;
@@ -94,7 +92,8 @@ describe("rate limit", () => {
         },
       });
 
-    for (let i = 0; i < 3; i++) expect((await call("1.2.3.4")).status).toBe(200);
+    for (let i = 0; i < 3; i++)
+      expect((await call("1.2.3.4")).status).toBe(200);
     const limited = await call("1.2.3.4");
     expect(limited.status).toBe(429);
     expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
@@ -129,8 +128,14 @@ describe("immutable-read cache", () => {
     );
     const app = createApp({ fetchFn });
 
-    await app.request("/api/rpc/1", jsonRpc("eth_getTransactionByHash", ["0xbb"]));
-    await app.request("/api/rpc/1", jsonRpc("eth_getTransactionByHash", ["0xbb"]));
+    await app.request(
+      "/api/rpc/1",
+      jsonRpc("eth_getTransactionByHash", ["0xbb"]),
+    );
+    await app.request(
+      "/api/rpc/1",
+      jsonRpc("eth_getTransactionByHash", ["0xbb"]),
+    );
     await app.request("/api/rpc/1", jsonRpc("eth_blockNumber"));
     await app.request("/api/rpc/1", jsonRpc("eth_blockNumber"));
     expect(fetchFn).toHaveBeenCalledTimes(4);

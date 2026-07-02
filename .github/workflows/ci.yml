@@ -23,6 +23,14 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm build
+        env:
+          # canary secrets: the bundle check asserts these never reach the client
+          ETHERSCAN_API_KEY: ci-canary-etherscan-0123456789abcdef
+          RPC_URL_1: https://paid.example.com/ci-canary-rpc-fedcba987654
+      - run: ./scripts/check-bundle-secrets.sh
+        env:
+          ETHERSCAN_API_KEY: ci-canary-etherscan-0123456789abcdef
+          RPC_URL_1: https://paid.example.com/ci-canary-rpc-fedcba987654
       - run: pnpm test
 
   fork-e2e:

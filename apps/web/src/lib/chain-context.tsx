@@ -19,6 +19,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { rpcUrlFor } from "./rpc";
 
 const SELECTED_KEY = "evmtb.selectedChain";
 const CUSTOM_KEY = "evmtb.customChains";
@@ -122,7 +123,7 @@ export function ChainProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // probe result is keyed by chain+rpc; a key mismatch means "still probing"
-  const probeKey = `${selected.chainId}::${selected.rpcUrl}`;
+  const probeKey = `${selected.chainId}::${selected.rpcUrl}::${selected.custom ?? false}`;
   const [probeResult, setProbeResult] = useState<{
     key: string;
     caps: ChainCapabilities;
@@ -132,7 +133,7 @@ export function ChainProvider({ children }: { children: ReactNode }) {
     let stale = false;
     const client = createClientForChain({
       chainId: selected.chainId,
-      rpcUrl: selected.rpcUrl,
+      rpcUrl: rpcUrlFor(selected),
     });
     probeCapabilities(client).then((caps) => {
       if (!stale) setProbeResult({ key: probeKey, caps });
@@ -140,7 +141,7 @@ export function ChainProvider({ children }: { children: ReactNode }) {
     return () => {
       stale = true;
     };
-  }, [probeKey, selected.chainId, selected.rpcUrl]);
+  }, [probeKey, selected]);
 
   const capabilities = probeResult?.key === probeKey ? probeResult.caps : null;
   const probing = capabilities === null;

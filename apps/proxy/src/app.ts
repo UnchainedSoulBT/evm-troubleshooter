@@ -38,7 +38,8 @@ export function createApp(deps: ProxyDeps = {}) {
   const env = deps.env ?? process.env;
   const now = deps.now ?? Date.now;
   const checkRate = createRateLimiter({
-    perMinute: deps.rateLimit?.perMinute ?? Number(env.RATE_LIMIT_PER_MIN ?? 120),
+    perMinute:
+      deps.rateLimit?.perMinute ?? Number(env.RATE_LIMIT_PER_MIN ?? 120),
     burst: deps.rateLimit?.burst ?? Number(env.RATE_LIMIT_BURST ?? 30),
     now,
   });
@@ -136,7 +137,10 @@ export function createApp(deps: ProxyDeps = {}) {
         cache.set(key, JSON.stringify({ result: parsed.result }));
       }
     } catch {
-      return c.json(rpcError(req.id, -32002, "upstream returned non-JSON"), 502);
+      return c.json(
+        rpcError(req.id, -32002, "upstream returned non-JSON"),
+        502,
+      );
     }
 
     return c.body(text, 200, {
