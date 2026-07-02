@@ -4,7 +4,7 @@ Execution ledger for `PLAN.md`. The executing agent ticks each task with its com
 a one-line note. Mark a phase `[x] complete` only after its acceptance gate (PLAN §7) is
 green. Log blockers/decisions inline.
 
-## Phase 0 — Foundation & CI — [ ] in progress
+## Phase 0 — Foundation & CI — [x] complete
 - [x] 0.0 Study prior art (PLAN Appendix A) — d223579 — GitLab repos inaccessible (auth-gated; verified via `git ls-remote` 2026-07-02). Proceeding clean-room per the Appendix A caveat: chain registry / selector maps / panic codes / trace-fallback pattern re-implemented from public sources (viem docs, openchain.xyz, Sourcify, Etherscan V2 docs, chainlist). Nothing Fireblocks-specific will ship.
 - [x] 0.1 pnpm workspace (`apps/web`, `apps/proxy`, `packages/core`, `test`) — 4a14711 — pnpm 11.9.0 via corepack; proxy is a mount-anywhere Hono app (standalone dev server + `hono/vercel` mount into web planned for single-deploy)
 - [x] 0.2 TS strict configs + ESLint + Prettier — 1bf4e43 — base tsconfig adds `noUncheckedIndexedAccess`/`noImplicitOverride`; root flat ESLint covers core/proxy/test, web keeps eslint-config-next
@@ -13,7 +13,7 @@ green. Log blockers/decisions inline.
 - [x] 0.5 Foundry/Anvil install script — 1dc5680 — idempotent foundryup script + `startAnvil` fork helper (readiness poll, ANVIL_BIN/ETH_RPC_URL overrides); fork-boot test green locally (chainId 1)
 - [x] 0.6 CI: typecheck/lint/test + forked-Anvil job — e6f2d6d — two jobs: checks + fork-e2e (foundry-toolchain, `pnpm test:fork`, Playwright); ETH_RPC_URL repo var, publicnode default
 - [x] 0.7 base README — c5e4051 — overview, dev setup, security model
-- [ ] GATE: `pnpm i && pnpm build && pnpm test` green in CI; Anvil fork boots
+- [x] GATE: `pnpm i && pnpm build && pnpm test` green in CI; Anvil fork boots — CI run 28601207810 (checks ✓, fork-e2e ✓ incl. Anvil mainnet-fork boot + Playwright smoke) — repo: github.com/UnchainedSoulBT/evm-troubleshooter
 
 ## Phase 1 — Chain registry & RPC capability — [ ] not started
 - [ ] 1.1 `chains.ts` registry seeded with top-10 (ETH default)
