@@ -8,6 +8,22 @@ import {
   type StateOverride,
   type TransactionSerialized,
 } from "viem";
+import type { StateOverrideEntry } from "./overrides";
+
+/** Map our override entries onto viem's stateDiff-XOR-state account shape. */
+function toViemStateOverride(entries: StateOverrideEntry[]): StateOverride {
+  return entries.map((e) => {
+    const base = {
+      address: e.address,
+      ...(e.balance !== undefined ? { balance: e.balance } : {}),
+      ...(e.nonce !== undefined ? { nonce: e.nonce } : {}),
+      ...(e.code !== undefined ? { code: e.code } : {}),
+    };
+    if (e.state) return { ...base, state: e.state };
+    if (e.stateDiff) return { ...base, stateDiff: e.stateDiff };
+    return base;
+  }) as StateOverride;
+}
 
 export interface SimulateRequest {
   from?: Address;
@@ -17,8 +33,8 @@ export interface SimulateRequest {
   gas?: bigint;
   /** pin to a historical block for replay (requires archive on old blocks) */
   blockNumber?: bigint;
-  /** fake balances/allowances/storage/code — wired fully in Phase 5 */
-  stateOverride?: StateOverride;
+  /** fake balances/allowances/storage/code to isolate a root cause (§5.3b) */
+  stateOverride?: StateOverrideEntry[];
 }
 
 export type SimulateOutcome =
@@ -84,7 +100,7 @@ export async function simulateCall(
         ? { blockNumber: req.blockNumber }
         : {}),
       ...(req.stateOverride !== undefined
-        ? { stateOverride: req.stateOverride }
+        ? { stateOverride: toViemStateOverride(req.stateOverride) }
         : {}),
     });
     return { status: "success", returnData: data ?? "0x" };

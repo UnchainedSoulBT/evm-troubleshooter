@@ -30,6 +30,26 @@ export type {
   SelectorLookup,
 } from "./decode/types";
 export {
+  balanceOverride,
+  nonceOverride,
+  codeOverride,
+  storageOverride,
+  mergeOverrides,
+  erc20BalanceSlot,
+  erc20AllowanceSlot,
+  findErc20Slot,
+  type StateOverrideEntry,
+  type StorageLayout,
+  type FoundSlot,
+} from "./overrides";
+export {
+  runReadProbe,
+  suggestProbes,
+  buildProbeOverride,
+  type ProbeResult,
+  type ProbeSuggestion,
+} from "./probes";
+export {
   CHAINS,
   DEFAULT_CHAIN_ID,
   getChain,
