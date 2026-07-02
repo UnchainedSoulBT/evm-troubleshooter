@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectInputKind, isHexData } from "./input.js";
+import { detectInputKind, isHexData } from "./input";
 
 describe("isHexData", () => {
   it("accepts 0x-prefixed even-length hex", () => {

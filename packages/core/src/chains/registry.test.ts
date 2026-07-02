@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  CHAINS,
-  DEFAULT_CHAIN_ID,
-  getChain,
-  txExplorerUrl,
-} from "./registry.js";
+import { CHAINS, DEFAULT_CHAIN_ID, getChain, txExplorerUrl } from "./registry";
 
 describe("chain registry", () => {
   it("ships the top-10 chains with Ethereum as default", () => {

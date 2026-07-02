@@ -3,7 +3,7 @@ import {
   probeCapabilities,
 } from "@evm-troubleshooter/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { startAnvil, type AnvilInstance } from "./anvil.js";
+import { startAnvil, type AnvilInstance } from "./anvil";
 
 describe("capability probe against a real anvil fork", () => {
   let anvil: AnvilInstance;

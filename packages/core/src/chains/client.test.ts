@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createClientForChain, UnknownChainError } from "./client.js";
+import { createClientForChain, UnknownChainError } from "./client";
 
 describe("createClientForChain", () => {
   it("creates a client for a registry chain by id", () => {

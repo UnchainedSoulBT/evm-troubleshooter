@@ -1,6 +1,6 @@
 import { createPublicClient, custom, type PublicClient } from "viem";
 import { describe, expect, it } from "vitest";
-import { probeCapabilities } from "./capabilities.js";
+import { probeCapabilities } from "./capabilities";
 
 type Handler = (method: string, params: unknown) => unknown;
 

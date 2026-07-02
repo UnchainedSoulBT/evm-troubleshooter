@@ -5,7 +5,7 @@ import {
   type Chain,
   type PublicClient,
 } from "viem";
-import { getChain, type ChainInfo } from "./registry.js";
+import { getChain, type ChainInfo } from "./registry";
 
 export interface CustomChainConfig {
   chainId: number;

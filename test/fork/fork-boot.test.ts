@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { rpc, startAnvil, type AnvilInstance } from "./anvil.js";
+import { rpc, startAnvil, type AnvilInstance } from "./anvil";
 
 describe("anvil mainnet fork", () => {
   let anvil: AnvilInstance;

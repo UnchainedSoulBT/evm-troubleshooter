@@ -1,4 +1,4 @@
-export { isHexData, detectInputKind, type InputKind } from "./input.js";
+export { isHexData, detectInputKind, type InputKind } from "./input";
 export {
   CHAINS,
   DEFAULT_CHAIN_ID,
@@ -6,14 +6,15 @@ export {
   txExplorerUrl,
   type ChainInfo,
   type NativeCurrency,
-} from "./chains/registry.js";
+} from "./chains/registry";
 export {
   createClientForChain,
   UnknownChainError,
   type ChainTarget,
   type CustomChainConfig,
-} from "./chains/client.js";
+} from "./chains/client";
 export {
   probeCapabilities,
   type ChainCapabilities,
-} from "./chains/capabilities.js";
+} from "./chains/capabilities";
+export { mergeChains, type MergedChain } from "./chains/merge";
