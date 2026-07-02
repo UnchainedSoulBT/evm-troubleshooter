@@ -1,6 +1,8 @@
 "use client";
 
 import type {
+  DecodedCall,
+  DecodedRevert,
   FetchedTransaction,
   SimulateOutcome,
   SimulateRequest,
@@ -15,21 +17,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DecodedCallView, DecodedRevertView } from "./decoded-view";
+
+export interface DecodedBundle {
+  call: DecodedCall | null;
+  revert: DecodedRevert | null;
+}
 
 export interface SimulationRun {
   request: SimulateRequest;
   outcome: SimulateOutcome;
+  decoded?: DecodedBundle;
 }
 
 export type Results =
   | { kind: "message"; tone: "error" | "info"; text: string }
-  | { kind: "transaction"; fetched: FetchedTransaction; replay?: SimulationRun }
+  | {
+      kind: "transaction";
+      fetched: FetchedTransaction;
+      decodedCall?: DecodedCall | null;
+      replay?: SimulationRun;
+    }
   | {
       kind: "simulation";
       request: SimulateRequest;
       outcome: SimulateOutcome;
+      decoded?: DecodedBundle;
       note?: string;
     };
+
+function DecodedSection({ decoded }: { decoded: DecodedBundle }) {
+  if (!decoded.call && !decoded.revert) {
+    return <p className="text-sm text-muted-foreground">Nothing to decode.</p>;
+  }
+  return (
+    <div className="grid gap-4">
+      {decoded.revert ? <DecodedRevertView revert={decoded.revert} /> : null}
+      {decoded.call ? <DecodedCallView call={decoded.call} /> : null}
+    </div>
+  );
+}
 
 function Mono({
   children,
@@ -91,6 +119,54 @@ function OutcomeBadge({ outcome }: { outcome: SimulateOutcome }) {
 
 function SimulationCard({ run, note }: { run: SimulationRun; note?: string }) {
   const { request, outcome } = run;
+  const body = (
+    <>
+      {request.from ? (
+        <Row label="From">
+          <Mono>{request.from}</Mono>
+        </Row>
+      ) : null}
+      <Row label="To">
+        <Mono>{request.to}</Mono>
+      </Row>
+      {request.blockNumber !== undefined ? (
+        <Row label="Pinned block">
+          <Mono>{request.blockNumber.toString()}</Mono>
+        </Row>
+      ) : null}
+      {outcome.status === "success" ? (
+        <Row label="Return data">
+          <Mono data-testid="return-data">
+            {outcome.returnData === "0x" ? "(empty)" : outcome.returnData}
+          </Mono>
+        </Row>
+      ) : null}
+      {outcome.status === "revert" ? (
+        <>
+          <Row label="Revert reason">
+            <span className="text-sm" data-testid="revert-message">
+              {outcome.message}
+            </span>
+          </Row>
+          <Row label="Revert data">
+            <Mono data-testid="revert-data">
+              {outcome.revertData === "0x"
+                ? "(no data returned)"
+                : outcome.revertData}
+            </Mono>
+          </Row>
+        </>
+      ) : null}
+      {outcome.status === "error" ? (
+        <Row label="Error">
+          <span className="text-sm" data-testid="rpc-error">
+            {outcome.message}
+          </span>
+        </Row>
+      ) : null}
+    </>
+  );
+
   return (
     <Card data-testid="simulation-card">
       <CardHeader>
@@ -104,49 +180,26 @@ function SimulationCard({ run, note }: { run: SimulationRun; note?: string }) {
         ) : null}
       </CardHeader>
       <CardContent>
-        {request.from ? (
-          <Row label="From">
-            <Mono>{request.from}</Mono>
-          </Row>
-        ) : null}
-        <Row label="To">
-          <Mono>{request.to}</Mono>
-        </Row>
-        {request.blockNumber !== undefined ? (
-          <Row label="Pinned block">
-            <Mono>{request.blockNumber.toString()}</Mono>
-          </Row>
-        ) : null}
-        {outcome.status === "success" ? (
-          <Row label="Return data">
-            <Mono data-testid="return-data">
-              {outcome.returnData === "0x" ? "(empty)" : outcome.returnData}
-            </Mono>
-          </Row>
-        ) : null}
-        {outcome.status === "revert" ? (
-          <>
-            <Row label="Revert reason">
-              <span className="text-sm" data-testid="revert-message">
-                {outcome.message}
-              </span>
-            </Row>
-            <Row label="Revert data">
-              <Mono data-testid="revert-data">
-                {outcome.revertData === "0x"
-                  ? "(no data returned)"
-                  : outcome.revertData}
-              </Mono>
-            </Row>
-          </>
-        ) : null}
-        {outcome.status === "error" ? (
-          <Row label="Error">
-            <span className="text-sm" data-testid="rpc-error">
-              {outcome.message}
-            </span>
-          </Row>
-        ) : null}
+        {run.decoded ? (
+          <Tabs defaultValue="decoded">
+            <TabsList>
+              <TabsTrigger value="decoded" data-testid="tab-decoded">
+                Decoded
+              </TabsTrigger>
+              <TabsTrigger value="result" data-testid="tab-result">
+                Result
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="decoded" className="pt-2">
+              <DecodedSection decoded={run.decoded} />
+            </TabsContent>
+            <TabsContent value="result" className="pt-2">
+              {body}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          body
+        )}
       </CardContent>
     </Card>
   );
@@ -182,13 +235,45 @@ export function ResultsPanel({
   if (results.kind === "simulation") {
     return (
       <SimulationCard
-        run={{ request: results.request, outcome: results.outcome }}
+        run={{
+          request: results.request,
+          outcome: results.outcome,
+          ...(results.decoded ? { decoded: results.decoded } : {}),
+        }}
         note={results.note}
       />
     );
   }
 
   const { tx, receipt } = results.fetched;
+  const txBody = (
+    <>
+      <Row label="From">
+        <Mono>{tx.from}</Mono>
+      </Row>
+      <Row label="To">
+        <Mono>{tx.to ?? "(contract creation)"}</Mono>
+      </Row>
+      <Row label="Value">
+        <span className="text-sm">{formatEther(tx.value)} native</span>
+      </Row>
+      <Row label="Block">
+        <Mono>{tx.blockNumber?.toString() ?? "pending"}</Mono>
+      </Row>
+      {receipt ? (
+        <Row label="Gas used">
+          <Mono>{receipt.gasUsed.toString()}</Mono>
+        </Row>
+      ) : null}
+      <Row label="Calldata">
+        <Mono>
+          {tx.input.length > 400
+            ? `${tx.input.slice(0, 400)}… (${(tx.input.length - 2) / 2} bytes)`
+            : tx.input}
+        </Mono>
+      </Row>
+    </>
+  );
   return (
     <div className="grid gap-6">
       <Card data-testid="tx-card">
@@ -217,30 +302,32 @@ export function ResultsPanel({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Row label="From">
-            <Mono>{tx.from}</Mono>
-          </Row>
-          <Row label="To">
-            <Mono>{tx.to ?? "(contract creation)"}</Mono>
-          </Row>
-          <Row label="Value">
-            <span className="text-sm">{formatEther(tx.value)} native</span>
-          </Row>
-          <Row label="Block">
-            <Mono>{tx.blockNumber?.toString() ?? "pending"}</Mono>
-          </Row>
-          {receipt ? (
-            <Row label="Gas used">
-              <Mono>{receipt.gasUsed.toString()}</Mono>
-            </Row>
-          ) : null}
-          <Row label="Calldata">
-            <Mono>
-              {tx.input.length > 400
-                ? `${tx.input.slice(0, 400)}… (${(tx.input.length - 2) / 2} bytes)`
-                : tx.input}
-            </Mono>
-          </Row>
+          {results.decodedCall !== undefined ? (
+            <Tabs defaultValue="decoded">
+              <TabsList>
+                <TabsTrigger value="decoded" data-testid="tab-decoded">
+                  Decoded
+                </TabsTrigger>
+                <TabsTrigger value="result" data-testid="tab-result">
+                  Details
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="decoded" className="pt-2">
+                {results.decodedCall ? (
+                  <DecodedCallView call={results.decodedCall} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No calldata to decode (plain value transfer).
+                  </p>
+                )}
+              </TabsContent>
+              <TabsContent value="result" className="pt-2">
+                {txBody}
+              </TabsContent>
+            </Tabs>
+          ) : (
+            txBody
+          )}
           {tx.to && tx.blockNumber !== null ? (
             <div className="pt-3">
               <Button

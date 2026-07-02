@@ -46,7 +46,10 @@ export function registerServices(app: Hono, deps: ServiceDeps) {
   app.get("/selectors/:kind/:selector", async (c) => {
     const kind = c.req.param("kind");
     const selector = c.req.param("selector").toLowerCase();
-    if ((kind !== "function" && kind !== "error") || !SELECTOR_RE.test(selector)) {
+    if (
+      (kind !== "function" && kind !== "error") ||
+      !SELECTOR_RE.test(selector)
+    ) {
       return c.json({ error: "invalid selector or kind" }, 400);
     }
 
@@ -80,7 +83,11 @@ export function registerServices(app: Hono, deps: ServiceDeps) {
   app.get("/abi/:chainId/:address", async (c) => {
     const chainId = Number(c.req.param("chainId"));
     const address = c.req.param("address").toLowerCase();
-    if (!Number.isInteger(chainId) || chainId <= 0 || !ADDRESS_RE.test(address)) {
+    if (
+      !Number.isInteger(chainId) ||
+      chainId <= 0 ||
+      !ADDRESS_RE.test(address)
+    ) {
       return c.json({ error: "invalid chainId or address" }, 400);
     }
 
@@ -126,9 +133,6 @@ export function registerServices(app: Hono, deps: ServiceDeps) {
       }
     }
 
-    return c.json(
-      { error: "no verified ABI found for this contract" },
-      404,
-    );
+    return c.json({ error: "no verified ABI found for this contract" }, 404);
   });
 }

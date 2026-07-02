@@ -16,5 +16,10 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // parallel e2e workers share one client IP; don't trip the abuse brake
+      RATE_LIMIT_PER_MIN: "6000",
+      RATE_LIMIT_BURST: "1000",
+    },
   },
 });

@@ -2,6 +2,8 @@
 
 import {
   createClientForChain,
+  decodeCalldata,
+  decodeRevert,
   detectInput,
   fetchTransaction,
   replayRequestFromTx,
@@ -12,7 +14,7 @@ import {
   type SimulateOutcome,
   type SimulateRequest,
 } from "@evm-troubleshooter/core";
-import { isAddress, type Address } from "viem";
+import { isAddress, type Abi, type Address, type Hex } from "viem";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,8 +29,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useChain } from "@/lib/chain-context";
+import {
+  fetchVerifiedAbi,
+  lookupSelector,
+  parseUserAbi,
+} from "@/lib/decode-client";
 import { rpcUrlFor } from "@/lib/rpc";
-import { ResultsPanel, type Results } from "./results-panel";
+import {
+  ResultsPanel,
+  type DecodedBundle,
+  type Results,
+} from "./results-panel";
 
 const KIND_LABEL: Record<DetectedInput["kind"], string> = {
   txHash: "transaction hash",
@@ -44,8 +55,12 @@ export function Troubleshooter() {
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [blockNumber, setBlockNumber] = useState("");
+  const [abiText, setAbiText] = useState("");
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<Results | null>(null);
+
+  const userAbi = useMemo(() => parseUserAbi(abiText), [abiText]);
+  const abiInvalid = abiText.trim() !== "" && userAbi === null;
 
   const detected = useMemo(() => (raw.trim() ? detectInput(raw) : null), [raw]);
 
@@ -78,9 +93,34 @@ export function Troubleshooter() {
     };
   }
 
+  async function resolveAbi(target?: Address): Promise<Abi | undefined> {
+    if (userAbi) return userAbi;
+    if (!target) return undefined;
+    return (await fetchVerifiedAbi(selected.chainId, target)) ?? undefined;
+  }
+
+  async function decodeAll(
+    data: Hex | undefined,
+    target: Address | undefined,
+    outcome: SimulateOutcome | null,
+  ): Promise<DecodedBundle> {
+    const abi = await resolveAbi(target);
+    const opts = { ...(abi ? { abi } : {}), lookupSelector };
+    const [call, revert] = await Promise.all([
+      data && data !== "0x"
+        ? decodeCalldata(data, opts)
+        : Promise.resolve(null),
+      outcome?.status === "revert"
+        ? decodeRevert(outcome.revertData, opts)
+        : Promise.resolve(null),
+    ]);
+    return { call, revert };
+  }
+
   async function simulate(request: SimulateRequest) {
     const outcome = await simulateCall(client(), request);
-    return { request, outcome };
+    const decoded = await decodeAll(request.data, request.to, outcome);
+    return { request, outcome, decoded };
   }
 
   async function run() {
@@ -99,7 +139,17 @@ export function Troubleshooter() {
             });
             break;
           }
-          setResults({ kind: "transaction", fetched });
+          const decodedCall =
+            fetched.tx.input && fetched.tx.input !== "0x"
+              ? (
+                  await decodeAll(
+                    fetched.tx.input,
+                    fetched.tx.to ?? undefined,
+                    null,
+                  )
+                ).call
+              : null;
+          setResults({ kind: "transaction", fetched, decodedCall });
           break;
         }
         case "rawTx": {
@@ -149,11 +199,12 @@ export function Troubleshooter() {
     setRunning(true);
     try {
       const request = replayRequestFromTx(fetched.tx);
-      const outcome: SimulateOutcome = await simulateCall(client(), request);
+      const run = await simulate(request);
       setResults({
         kind: "transaction",
         fetched,
-        replay: { request, outcome },
+        decodedCall: run.decoded.call,
+        replay: run,
       });
     } catch (err) {
       setResults({
@@ -238,6 +289,28 @@ export function Troubleshooter() {
               </div>
             </div>
           ) : null}
+
+          <div className="grid gap-2">
+            <Label htmlFor="abi">
+              Contract ABI (optional — JSON or one signature per line;
+              auto-resolved from Sourcify/Etherscan when omitted)
+            </Label>
+            <Textarea
+              id="abi"
+              data-testid="abi-input"
+              placeholder='[{"type":"function", …}]  or  function transfer(address to, uint256 amount)'
+              className="min-h-16 font-mono text-xs"
+              value={abiText}
+              onChange={(e) => setAbiText(e.target.value)}
+              aria-invalid={abiInvalid}
+            />
+            {abiInvalid ? (
+              <p className="text-sm text-destructive" role="alert">
+                ABI not parseable — paste a JSON ABI array or human-readable
+                signatures, one per line.
+              </p>
+            ) : null}
+          </div>
 
           <div>
             <Button data-testid="run-button" onClick={run} disabled={!canRun}>

@@ -40,6 +40,7 @@ test.describe("troubleshooter flows on a mainnet fork", () => {
       "success",
       { timeout: 20_000 },
     );
+    await page.getByTestId("tab-result").click();
     await expect(page.getByTestId("return-data")).toContainText("0x");
   });
 
@@ -56,6 +57,7 @@ test.describe("troubleshooter flows on a mainnet fork", () => {
       { timeout: 20_000 },
     );
     // Error(string) selector visible in the raw revert data
+    await page.getByTestId("tab-result").click();
     await expect(page.getByTestId("revert-data")).toContainText("0x08c379a0");
   });
 
@@ -82,6 +84,8 @@ test.describe("troubleshooter flows on a mainnet fork", () => {
     await expect(page.getByTestId("tx-status")).toContainText("Confirmed", {
       timeout: 20_000,
     });
+    // plain value transfer: details live in the Details tab
+    await page.getByTestId("tab-result").click();
     await expect(page.getByTestId("tx-card")).toContainText("1 native");
 
     await page.getByTestId("replay-button").click();

@@ -66,14 +66,16 @@ describe("GET /api/selectors/:kind/:selector", () => {
     expect((await app.request("/api/selectors/function/nothex")).status).toBe(
       400,
     );
-    expect(
-      (await app.request("/api/selectors/banana/0xa9059cbb")).status,
-    ).toBe(400);
+    expect((await app.request("/api/selectors/banana/0xa9059cbb")).status).toBe(
+      400,
+    );
   });
 
   it("returns an empty list when openchain has nothing", async () => {
     const app = createApp({
-      fetchFn: serviceMock({ openchain: () => ({ ok: true, result: { function: {} } }) }),
+      fetchFn: serviceMock({
+        openchain: () => ({ ok: true, result: { function: {} } }),
+      }),
     });
     const res = await app.request("/api/selectors/function/0x12345678");
     expect(await res.json()).toEqual({ results: [] });
@@ -85,7 +87,10 @@ describe("GET /api/abi/:chainId/:address", () => {
 
   it("serves a Sourcify-verified ABI and caches it", async () => {
     const fetchFn = serviceMock({
-      sourcify: () => ({ status: 200, body: { abi: JSON.parse(ERC20_ABI_JSON) } }),
+      sourcify: () => ({
+        status: 200,
+        body: { abi: JSON.parse(ERC20_ABI_JSON) },
+      }),
     });
     const app = createApp({ fetchFn });
 
@@ -122,7 +127,9 @@ describe("GET /api/abi/:chainId/:address", () => {
   });
 
   it("skips Etherscan without a key and 404s when unverified", async () => {
-    const fetchFn = serviceMock({ sourcify: () => ({ status: 404, body: {} }) });
+    const fetchFn = serviceMock({
+      sourcify: () => ({ status: 404, body: {} }),
+    });
     const app = createApp({ fetchFn, env: {} });
     const res = await app.request(`/api/abi/1/${ADDR}`);
     expect(res.status).toBe(404);
