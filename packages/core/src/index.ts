@@ -17,6 +17,18 @@ export {
   replayRequestFromTx,
   type FetchedTransaction,
 } from "./tx";
+export { decodeCalldata } from "./decode/calldata";
+export { decodeRevert } from "./decode/revert";
+export { COMMON_SELECTORS, PANIC_CODES } from "./decode/constants";
+export type {
+  DecodedCall,
+  DecodedParam,
+  DecodedRevert,
+  DecodedSubCall,
+  DecodeOptions,
+  DecodeSource,
+  SelectorLookup,
+} from "./decode/types";
 export {
   CHAINS,
   DEFAULT_CHAIN_ID,
