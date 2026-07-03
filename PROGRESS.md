@@ -67,17 +67,17 @@ green. Log blockers/decisions inline.
 - [x] 7.5 receipt polling → feed hash into trace — 9904f13 — waitForTransactionReceipt → status badge; tx hash shown (paste back into the troubleshooter input re-traces it)
 - [x] GATE: encode round-trips; mock-wallet broadcast works; no server-side keys — CI green (checks ✓, fork-e2e ✓); encode↔decode unit test; broadcast.spec proves mock-wallet connect→preflight(all pass)→broadcast→success receipt on a chain-id-31337 anvil fork; no server key path (proxy allowlist includes only eth_sendRawTransaction; broadcast is client wallet only)
 
-## Phase 8 — Sharing, reports & recipes — [ ] in progress
+## Phase 8 — Sharing, reports & recipes — [x] complete (gate green in CI after 7842766)
 - [x] 8.1 shareable permalink (full request) → reproduce — e012c05/7842766 — base64url codec (chain/to/from/data/value/block/overrides/custom-rpc); loader switches chain then auto-reproduces once selected; e2e opens the link in a fresh page → identical revert
 - [x] 8.2 markdown report export — e012c05/7842766 — toMarkdownReport (chain/request/decoded-args table/result/reproduce link); bigint-safe; Copy report button
 - [x] 8.3 saved recipes/templates with param slots — 7842766 — BUILTIN_RECIPES (approve, transfer, transferFrom) with {{param}} arg templates; RecipePicker dialog fills slots → encodes → loads into the troubleshooter
-- [ ] GATE: permalink reproduces sim; report complete; recipe re-runs
+- [x] GATE: permalink reproduces sim; report complete; recipe re-runs — CI green; sharing.spec proves permalink reproduces the identical revert in a fresh page + report export; recipes unit-tested (encode↔decode) and wired to the input
 
-## Phase 9 — UX polish & docs — [ ] not started
-- [ ] 9.1 loading/empty/error states + responsive + dark mode
-- [ ] 9.2 landing page + in-app help/examples
-- [ ] 9.3 accessibility pass
-- [ ] 9.4 README + deploy guide + CONTRIBUTING
+## Phase 9 — UX polish & docs — [ ] in progress
+- [x] 9.1 loading/empty/error states + responsive + dark mode — f96f6f0 — busy labels/disabled states throughout, role="alert" errors, responsive flex/grid; dark mode toggle (system-preference default, persisted, .dark class)
+- [x] 9.2 landing page + in-app help/examples — f96f6f0 — Intro card explains the flow on the selected chain + collapsible example inputs that load into the troubleshooter
+- [x] 9.3 accessibility pass — f96f6f0 — @axe-core/playwright gate (wcag2a/2aa, no critical/serious); fixed chain-select combobox missing accessible name; keyboard-focus test
+- [x] 9.4 README + deploy guide + CONTRIBUTING — f96f6f0 — README features/config/Vercel deploy + bundle-secret step; CONTRIBUTING with architecture map + guardrails + dev workflow
 - [ ] GATE: no critical axe issues; inputs validated; docs enable fresh setup
 
 ## Phase 10 — Hardening & launch — [ ] not started
