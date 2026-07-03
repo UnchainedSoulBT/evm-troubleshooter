@@ -61,7 +61,7 @@ green. Log blockers/decisions inline.
 
 ## Phase 7 — Build call & broadcast — [ ] in progress
 - [x] 7.1 ABI-driven encode form + per-arg validation — 9904f13(core in earlier commit) — encodeCall with per-arg parse (address/uint/int/bool/bytes/string/arrays/tuples), encode↔decode identity tested; writableFunctions filters view/pure
-- [x] 7.2 wagmi + WalletConnect v2 connect — 9904f13/<wc commit> — wagmi 3 config: injected + WalletConnect v2 (walletConnect connector, enabled when NEXT_PUBLIC_WC_PROJECT_ID is set — public, not a secret) + mock connector gated behind NEXT_PUBLIC_E2E_MOCK_WALLET (never ships in the public build)
+- [x] 7.2 wagmi + WalletConnect v2 connect — 9904f13/738d7cf — wagmi 3 config: injected + WalletConnect v2 (walletConnect connector, enabled when NEXT_PUBLIC_WC_PROJECT_ID is set — public, not a secret) + mock connector gated behind NEXT_PUBLIC_E2E_MOCK_WALLET (never ships in the public build)
 - [x] 7.3 sendTransaction + raw tx relay — 9904f13 — walletClient.sendTransaction (client-side signing only); raw pre-signed relay via publicClient.sendRawTransaction (bytes only, no key handling)
 - [x] 7.4 pre-flight checklist + would-revert warning — 9904f13(core) — chainId match / fresh-fee gas estimate / nonce / balance≥value+fee / final simulation; broadcast disabled while any check fails; loud revert warning
 - [x] 7.5 receipt polling → feed hash into trace — 9904f13 — waitForTransactionReceipt → status badge; tx hash shown (paste back into the troubleshooter input re-traces it)
