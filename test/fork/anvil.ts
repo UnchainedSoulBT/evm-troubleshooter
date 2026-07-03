@@ -12,6 +12,8 @@ interface AnvilOptions {
   forkUrl?: string;
   forkBlockNumber?: bigint;
   port?: number;
+  /** override the fork's chain id (anvil keeps the forked id by default) */
+  chainId?: number;
 }
 
 async function rpc(url: string, method: string, params: unknown[] = []) {
@@ -40,6 +42,9 @@ export async function startAnvil(
   ];
   if (opts.forkBlockNumber !== undefined) {
     args.push("--fork-block-number", opts.forkBlockNumber.toString());
+  }
+  if (opts.chainId !== undefined) {
+    args.push("--chain-id", String(opts.chainId));
   }
 
   const bin = process.env.ANVIL_BIN ?? "anvil";

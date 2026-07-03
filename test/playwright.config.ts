@@ -20,6 +20,8 @@ export default defineConfig({
       // parallel e2e workers share one client IP; don't trip the abuse brake
       RATE_LIMIT_PER_MIN: "6000",
       RATE_LIMIT_BURST: "1000",
+      // enable the mock wallet connector for the broadcast e2e
+      NEXT_PUBLIC_E2E_MOCK_WALLET: "1",
     },
   },
 });
