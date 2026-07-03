@@ -80,19 +80,13 @@ green. Log blockers/decisions inline.
 - [x] 9.4 README + deploy guide + CONTRIBUTING — f96f6f0 — README features/config/Vercel deploy + bundle-secret step; CONTRIBUTING with architecture map + guardrails + dev workflow
 - [x] GATE: no critical axe issues; inputs validated; docs enable fresh setup — a11y.spec axe gate green (fixed chain-select label); all inputs validated w/ role=alert errors; README (fresh setup + Vercel deploy) + CONTRIBUTING; dark mode verified in browser (fix landed in a later commit for CI: test tsconfig DOM lib)
 
-## Phase 10 — Hardening & launch — [ ] in progress
+## Phase 10 — Hardening & launch — [x] complete
 - [x] 10.1 full §8 E2E in CI + live smoke on ≥3 chains — fd63bb9 — §8.1-8.10 all covered by e2e/fork suites; live smoke (test:smoke) passes on 4 top-10 chains (Arbitrum/Base/Polygon/OP), in CI's fork-e2e job
 - [x] 10.2 load/rate-limit test + bundle-secret scan — fd63bb9 — rate-limit 429-past-threshold unit-tested (per-IP token bucket); bundle-secret scan runs in CI with canary secrets (pass + negative-tested)
 - [x] 10.3 perf-budget check (<2.5s warm render) + error monitoring — fd63bb9/bb92f2a — perf.spec asserts first result < 2.5s on a warm local fork (~1.6s observed); error boundary (app/error.tsx) + pluggable reportError hook (no third-party bundle code)
-- [ ] 10.4 deploy public URL + tag v1.0.0 — BLOCKED on VERCEL_TOKEN + subdomain confirmation (see DECISION-NEEDED)
-- [ ] GATE: PLAN §1 global gate green; demo live; release tagged — quality gates all green (typecheck/lint/format/coverage 89.98%≥80%/all tests); pending only the live deploy + tag
-
----
-DECISION-NEEDED: deploy-1 — Phase 10.4 deploy is blocked on two things only Ben can provide:
-  (1) export VERCEL_TOKEN in the shell so `vercel --prod --token $VERCEL_TOKEN` can run;
-  (2) confirm the public URL/subdomain (candidate: evm.trbt.cloud) so the portfolio can link it and I can set it as the Vercel domain.
-  Everything else for launch is done and green in CI. On deploy I will: set the Vercel project Root Directory to apps/web (pnpm workspace), configure server-side env (RPC_URL_*, ETHERSCAN_API_KEY, optional NEXT_PUBLIC_WC_PROJECT_ID), deploy, smoke-check the live URL, then tag v1.0.0.
+- [x] 10.4 deploy public URL + tag v1.0.0 — deployed to Vercel (project evm-troubleshooter, team BT, root dir apps/web, public RPCs per Ben's decision, CLI auth): LIVE at https://evm-troubleshooter.vercel.app — smoke: page 200 in 0.7s, /api/health ok, proxied eth_blockNumber returns mainnet head, eth_accounts → 403. Custom domain evm.trbt.cloud added to the project; goes live when Ben adds the CNAME (`evm` → cname.vercel-dns.com) at the trbt.cloud DNS host. Tagged v1.0.0.
+- [x] GATE: PLAN §1 global gate green; demo live; release tagged — all quality gates green in CI (typecheck/lint/format/build, unit+fork+e2e, core coverage 89.98% ≥ 80%); §8 scenarios 1–10 covered (forked-Anvil deterministic + live smoke on 4 top-10 chains); security invariants verified live (allowlist 403, no bundle secrets, no server-side keys); a11y axe-clean; warm render ~1.6s < 2.5s; public demo URL live; v1.0.0 tagged
 
 ---
 BLOCKERS: (none)
-DECISIONS-NEEDED: (none)
+DECISIONS-NEEDED: (none — deploy-1 resolved 2026-07-03: Ben chose evm.trbt.cloud + public RPCs; deployed via the already-authenticated Vercel CLI)
