@@ -73,19 +73,25 @@ green. Log blockers/decisions inline.
 - [x] 8.3 saved recipes/templates with param slots — 7842766 — BUILTIN_RECIPES (approve, transfer, transferFrom) with {{param}} arg templates; RecipePicker dialog fills slots → encodes → loads into the troubleshooter
 - [x] GATE: permalink reproduces sim; report complete; recipe re-runs — CI green; sharing.spec proves permalink reproduces the identical revert in a fresh page + report export; recipes unit-tested (encode↔decode) and wired to the input
 
-## Phase 9 — UX polish & docs — [ ] in progress
+## Phase 9 — UX polish & docs — [x] complete
 - [x] 9.1 loading/empty/error states + responsive + dark mode — f96f6f0 — busy labels/disabled states throughout, role="alert" errors, responsive flex/grid; dark mode toggle (system-preference default, persisted, .dark class)
 - [x] 9.2 landing page + in-app help/examples — f96f6f0 — Intro card explains the flow on the selected chain + collapsible example inputs that load into the troubleshooter
 - [x] 9.3 accessibility pass — f96f6f0 — @axe-core/playwright gate (wcag2a/2aa, no critical/serious); fixed chain-select combobox missing accessible name; keyboard-focus test
 - [x] 9.4 README + deploy guide + CONTRIBUTING — f96f6f0 — README features/config/Vercel deploy + bundle-secret step; CONTRIBUTING with architecture map + guardrails + dev workflow
-- [ ] GATE: no critical axe issues; inputs validated; docs enable fresh setup
+- [x] GATE: no critical axe issues; inputs validated; docs enable fresh setup — a11y.spec axe gate green (fixed chain-select label); all inputs validated w/ role=alert errors; README (fresh setup + Vercel deploy) + CONTRIBUTING; dark mode verified in browser (fix landed in a later commit for CI: test tsconfig DOM lib)
 
-## Phase 10 — Hardening & launch — [ ] not started
-- [ ] 10.1 full §8 E2E in CI + live smoke on ≥3 chains
-- [ ] 10.2 load/rate-limit test + bundle-secret scan
-- [ ] 10.3 perf-budget check (<2.5s warm render) + error monitoring
-- [ ] 10.4 deploy public URL + tag v1.0.0
-- [ ] GATE: PLAN §1 global gate green; demo live; release tagged
+## Phase 10 — Hardening & launch — [ ] in progress
+- [x] 10.1 full §8 E2E in CI + live smoke on ≥3 chains — fd63bb9 — §8.1-8.10 all covered by e2e/fork suites; live smoke (test:smoke) passes on 4 top-10 chains (Arbitrum/Base/Polygon/OP), in CI's fork-e2e job
+- [x] 10.2 load/rate-limit test + bundle-secret scan — fd63bb9 — rate-limit 429-past-threshold unit-tested (per-IP token bucket); bundle-secret scan runs in CI with canary secrets (pass + negative-tested)
+- [x] 10.3 perf-budget check (<2.5s warm render) + error monitoring — fd63bb9/bb92f2a — perf.spec asserts first result < 2.5s on a warm local fork (~1.6s observed); error boundary (app/error.tsx) + pluggable reportError hook (no third-party bundle code)
+- [ ] 10.4 deploy public URL + tag v1.0.0 — BLOCKED on VERCEL_TOKEN + subdomain confirmation (see DECISION-NEEDED)
+- [ ] GATE: PLAN §1 global gate green; demo live; release tagged — quality gates all green (typecheck/lint/format/coverage 89.98%≥80%/all tests); pending only the live deploy + tag
+
+---
+DECISION-NEEDED: deploy-1 — Phase 10.4 deploy is blocked on two things only Ben can provide:
+  (1) export VERCEL_TOKEN in the shell so `vercel --prod --token $VERCEL_TOKEN` can run;
+  (2) confirm the public URL/subdomain (candidate: evm.trbt.cloud) so the portfolio can link it and I can set it as the Vercel domain.
+  Everything else for launch is done and green in CI. On deploy I will: set the Vercel project Root Directory to apps/web (pnpm workspace), configure server-side env (RPC_URL_*, ETHERSCAN_API_KEY, optional NEXT_PUBLIC_WC_PROJECT_ID), deploy, smoke-check the live URL, then tag v1.0.0.
 
 ---
 BLOCKERS: (none)
