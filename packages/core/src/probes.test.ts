@@ -1,5 +1,7 @@
+import { createPublicClient, custom, pad, type PublicClient } from "viem";
 import { describe, expect, it } from "vitest";
-import { suggestProbes } from "./probes";
+import { buildProbeOverride, runReadProbe, suggestProbes } from "./probes";
+import { erc20AllowanceSlot } from "./overrides";
 import type { DecodedRevert } from "./decode/types";
 
 const TOKEN = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" as const;
@@ -70,5 +72,107 @@ describe("suggestProbes", () => {
     expect(suggestProbes(revert, { token: TOKEN, owner: OWNER })).toHaveLength(
       0,
     );
+  });
+});
+
+const ALLOWANCE_SLOT_INDEX = 10n;
+
+function tokenClient(): PublicClient {
+  return createPublicClient({
+    transport: custom(
+      {
+        request: async ({
+          method,
+          params,
+        }: {
+          method: string;
+          params: unknown[];
+        }) => {
+          if (method !== "eth_call") return "0x1";
+          const [call, , overrides] = params as [
+            { data: string },
+            string,
+            Record<string, { stateDiff?: Record<string, string> }> | undefined,
+          ];
+          // allowance(owner, spender) selector 0xdd62ed3e
+          if (call.data.startsWith("0xdd62ed3e")) {
+            if (!overrides) return pad("0x00");
+            const expected = erc20AllowanceSlot(
+              OWNER,
+              SPENDER,
+              ALLOWANCE_SLOT_INDEX,
+              "solidity",
+            );
+            const entry = Object.entries(overrides).find(
+              ([addr]) => addr.toLowerCase() === TOKEN.toLowerCase(),
+            );
+            const diff = entry?.[1]?.stateDiff ?? {};
+            const written = Object.entries(diff).find(
+              ([slot]) => slot.toLowerCase() === expected.toLowerCase(),
+            );
+            return written ? written[1] : pad("0x00");
+          }
+          // balanceOf → return a value
+          return pad("0x64");
+        },
+      },
+      { retryCount: 0 },
+    ),
+  });
+}
+
+describe("runReadProbe", () => {
+  it("runs a balanceOf read probe and parses the value", async () => {
+    const result = await runReadProbe(tokenClient(), TOKEN, {
+      kind: "balanceOf",
+      owner: OWNER,
+    });
+    expect(result.outcome.status).toBe("success");
+    expect(result.value).toBe(100n);
+    expect(result.label).toContain("balanceOf");
+  });
+
+  it("runs an allowance read probe", async () => {
+    const result = await runReadProbe(tokenClient(), TOKEN, {
+      kind: "allowance",
+      owner: OWNER,
+      spender: SPENDER,
+    });
+    expect(result.label).toContain("allowance");
+  });
+});
+
+describe("buildProbeOverride", () => {
+  it("discovers the allowance slot and builds an override", async () => {
+    const suggestion = {
+      kind: "allowance" as const,
+      token: TOKEN,
+      owner: OWNER,
+      spender: SPENDER,
+      needed: 500n,
+      description: "",
+    };
+    const override = await buildProbeOverride(tokenClient(), suggestion);
+    expect(override).not.toBeNull();
+    expect(override?.address).toBe(TOKEN);
+    expect(override?.stateDiff?.[0]?.slot).toBe(
+      erc20AllowanceSlot(OWNER, SPENDER, ALLOWANCE_SLOT_INDEX, "solidity"),
+    );
+  });
+
+  it("returns null when the slot cannot be discovered", async () => {
+    const blindClient = createPublicClient({
+      transport: custom(
+        { request: async () => pad("0x00") },
+        { retryCount: 0 },
+      ),
+    });
+    const override = await buildProbeOverride(blindClient, {
+      kind: "balance",
+      token: TOKEN,
+      holder: OWNER,
+      description: "",
+    });
+    expect(override).toBeNull();
   });
 });

@@ -1,7 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    // Playwright page.evaluate callbacks run in the browser and reference
+    // DOM globals (document, window); type-check them against the DOM lib.
+    "lib": ["ES2023", "DOM"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

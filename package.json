@@ -14,8 +14,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:fork": "vitest run --config vitest.fork.config.ts",
+    "test:smoke": "vitest run --config vitest.smoke.config.ts",
     "test:e2e": "pnpm --filter e2e test"
   },
   "devDependencies": {
