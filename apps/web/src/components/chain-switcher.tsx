@@ -163,7 +163,11 @@ export function ChainSwitcher() {
         value={String(selected.chainId)}
         onValueChange={(v) => selectChain(Number(v))}
       >
-        <SelectTrigger className="w-52" data-testid="chain-select">
+        <SelectTrigger
+          className="w-52"
+          data-testid="chain-select"
+          aria-label="Select chain"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

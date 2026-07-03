@@ -39,6 +39,7 @@ import {
   parseUserAbi,
 } from "@/lib/decode-client";
 import { rpcUrlFor } from "@/lib/rpc";
+import { Intro } from "./intro";
 import { RecipePicker } from "./recipe-picker";
 import {
   ResultsPanel,
@@ -305,6 +306,14 @@ export function Troubleshooter() {
 
   return (
     <div className="grid gap-6">
+      <Intro
+        onExample={(ex) => {
+          setTo(ex.to);
+          setFrom(ex.from ?? "");
+          setRaw(ex.data);
+          setResults(null);
+        }}
+      />
       <Card>
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-2">
