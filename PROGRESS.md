@@ -59,18 +59,18 @@ green. Log blockers/decisions inline.
 - [x] 6.4 graceful fallback to eth_call + capability badge — 68d40cf — source none → dashed "trace unavailable" panel; sim pass/fail always available; capability badges already reflect trace support (Phase 1)
 - [x] GATE: nested tree flags reverting leg; asset diff shows deltas; degrades cleanly — CI green (checks ✓, fork-e2e ✓); trace.fork proves reverting-leg flag on real fork; trace.spec proves UI tree + asset-diff tab (§8.4); degrade path verified live (publicnode reports trace off → dashed unavailable panel)
 
-## Phase 7 — Build call & broadcast — [ ] in progress
+## Phase 7 — Build call & broadcast — [x] complete
 - [x] 7.1 ABI-driven encode form + per-arg validation — 9904f13(core in earlier commit) — encodeCall with per-arg parse (address/uint/int/bool/bytes/string/arrays/tuples), encode↔decode identity tested; writableFunctions filters view/pure
 - [x] 7.2 wagmi + WalletConnect v2 connect — 9904f13/738d7cf — wagmi 3 config: injected + WalletConnect v2 (walletConnect connector, enabled when NEXT_PUBLIC_WC_PROJECT_ID is set — public, not a secret) + mock connector gated behind NEXT_PUBLIC_E2E_MOCK_WALLET (never ships in the public build)
 - [x] 7.3 sendTransaction + raw tx relay — 9904f13 — walletClient.sendTransaction (client-side signing only); raw pre-signed relay via publicClient.sendRawTransaction (bytes only, no key handling)
 - [x] 7.4 pre-flight checklist + would-revert warning — 9904f13(core) — chainId match / fresh-fee gas estimate / nonce / balance≥value+fee / final simulation; broadcast disabled while any check fails; loud revert warning
 - [x] 7.5 receipt polling → feed hash into trace — 9904f13 — waitForTransactionReceipt → status badge; tx hash shown (paste back into the troubleshooter input re-traces it)
-- [x] GATE: encode round-trips; mock-wallet broadcast works; no server-side keys — encode↔decode unit test; broadcast.spec proves mock-wallet connect→preflight(all pass)→broadcast→success receipt on a chain-id-31337 anvil fork; no server key path (proxy allowlist includes only eth_sendRawTransaction; broadcast is client wallet only) — pending CI confirm
+- [x] GATE: encode round-trips; mock-wallet broadcast works; no server-side keys — CI green (checks ✓, fork-e2e ✓); encode↔decode unit test; broadcast.spec proves mock-wallet connect→preflight(all pass)→broadcast→success receipt on a chain-id-31337 anvil fork; no server key path (proxy allowlist includes only eth_sendRawTransaction; broadcast is client wallet only)
 
-## Phase 8 — Sharing, reports & recipes — [ ] not started
-- [ ] 8.1 shareable permalink (full request) → reproduce
-- [ ] 8.2 markdown report export
-- [ ] 8.3 saved recipes/templates with param slots
+## Phase 8 — Sharing, reports & recipes — [ ] in progress
+- [x] 8.1 shareable permalink (full request) → reproduce — e012c05/7842766 — base64url codec (chain/to/from/data/value/block/overrides/custom-rpc); loader switches chain then auto-reproduces once selected; e2e opens the link in a fresh page → identical revert
+- [x] 8.2 markdown report export — e012c05/7842766 — toMarkdownReport (chain/request/decoded-args table/result/reproduce link); bigint-safe; Copy report button
+- [x] 8.3 saved recipes/templates with param slots — 7842766 — BUILTIN_RECIPES (approve, transfer, transferFrom) with {{param}} arg templates; RecipePicker dialog fills slots → encodes → loads into the troubleshooter
 - [ ] GATE: permalink reproduces sim; report complete; recipe re-runs
 
 ## Phase 9 — UX polish & docs — [ ] not started
