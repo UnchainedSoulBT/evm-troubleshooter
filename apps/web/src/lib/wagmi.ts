@@ -1,4 +1,5 @@
 import { createConfig, http, injected, mock } from "wagmi";
+import { walletConnect } from "wagmi/connectors";
 import { mainnet } from "wagmi/chains";
 import { defineChain, type Chain } from "viem";
 import type { Config, CreateConnectorFn } from "wagmi";
@@ -24,6 +25,13 @@ const mockEnabled =
 
 function connectors(): CreateConnectorFn[] {
   const list: CreateConnectorFn[] = [injected()];
+
+  // WalletConnect v2 — enabled when a public project id is configured
+  const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
+  if (wcProjectId) {
+    list.push(walletConnect({ projectId: wcProjectId }));
+  }
+
   if (mockEnabled) {
     list.unshift(
       mock({
