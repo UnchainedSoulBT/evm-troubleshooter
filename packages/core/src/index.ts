@@ -69,6 +69,13 @@ export {
   type ShareOverride,
 } from "./share";
 export { toMarkdownReport, type ReportInput } from "./report";
+export {
+  applyRecipe,
+  BUILTIN_RECIPES,
+  type Recipe,
+  type RecipeParam,
+  type ApplyRecipeResult,
+} from "./recipes";
 export { traceCall, assetDiffFromPrestate } from "./trace/trace";
 export { normalizeCallTracer, normalizeParityTrace } from "./trace/normalize";
 export type {

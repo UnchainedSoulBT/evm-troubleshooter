@@ -5,6 +5,7 @@ import {
   createClientForChain,
   decodeCalldata,
   decodeRevert,
+  decodeShareState,
   detectInput,
   fetchTransaction,
   replayRequestFromTx,
@@ -13,11 +14,12 @@ import {
   traceCall,
   type DetectedInput,
   type FetchedTransaction,
+  type ShareState,
   type SimulateOutcome,
   type SimulateRequest,
 } from "@evm-troubleshooter/core";
 import { isAddress, type Abi, type Address, type Hex } from "viem";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +39,7 @@ import {
   parseUserAbi,
 } from "@/lib/decode-client";
 import { rpcUrlFor } from "@/lib/rpc";
+import { RecipePicker } from "./recipe-picker";
 import {
   ResultsPanel,
   type DecodedBundle,
@@ -52,7 +55,7 @@ const KIND_LABEL: Record<DetectedInput["kind"], string> = {
 };
 
 export function Troubleshooter() {
-  const { selected } = useChain();
+  const { selected, selectChain, addCustomChain } = useChain();
   const [raw, setRaw] = useState("");
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
@@ -60,6 +63,7 @@ export function Troubleshooter() {
   const [abiText, setAbiText] = useState("");
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<Results | null>(null);
+  const [pendingShare, setPendingShare] = useState<ShareState | null>(null);
 
   const userAbi = useMemo(() => parseUserAbi(abiText), [abiText]);
   const abiInvalid = abiText.trim() !== "" && userAbi === null;
@@ -119,6 +123,14 @@ export function Troubleshooter() {
     return { call, revert };
   }
 
+  function shareCtx() {
+    return {
+      chainId: selected.chainId,
+      chainName: selected.name,
+      ...(selected.custom ? { rpcUrl: selected.rpcUrl } : {}),
+    };
+  }
+
   async function simulate(request: SimulateRequest) {
     const c = client();
     const [outcome, trace, assetDiff] = await Promise.all([
@@ -132,8 +144,70 @@ export function Troubleshooter() {
       outcome,
       decoded,
       traceBundle: { trace, assetDiff },
+      share: shareCtx(),
     };
   }
+
+  // Load a permalink (?s=…) on mount: switch to the encoded chain, then the
+  // effect below reproduces the simulation once that chain is selected.
+  // State updates are deferred a microtask so they run after hydration.
+  useEffect(() => {
+    const encoded = new URLSearchParams(window.location.search).get("s");
+    if (!encoded) return;
+    const state = decodeShareState(encoded);
+    if (!state) return;
+    void (async () => {
+      await Promise.resolve();
+      if (state.rpcUrl) {
+        addCustomChain({ chainId: state.chainId, rpcUrl: state.rpcUrl });
+      } else {
+        selectChain(state.chainId);
+      }
+      setRaw(state.data ?? "");
+      setTo(state.to);
+      setFrom(state.from ?? "");
+      setBlockNumber(state.blockNumber ?? "");
+      setPendingShare(state);
+    })();
+    // one-shot on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!pendingShare || selected.chainId !== pendingShare.chainId) return;
+    const state = pendingShare;
+    void (async () => {
+      await Promise.resolve();
+      setPendingShare(null);
+      setRunning(true);
+      try {
+        const request: SimulateRequest = {
+          to: state.to,
+          ...(state.from ? { from: state.from } : {}),
+          ...(state.data ? { data: state.data } : {}),
+          ...(state.value !== undefined ? { value: BigInt(state.value) } : {}),
+          ...(state.blockNumber !== undefined
+            ? { blockNumber: BigInt(state.blockNumber) }
+            : {}),
+          ...(state.overrides?.length
+            ? {
+                stateOverride: state.overrides.map((o) => ({
+                  address: o.address,
+                  ...(o.stateDiff ? { stateDiff: o.stateDiff } : {}),
+                  ...(o.balance !== undefined
+                    ? { balance: BigInt(o.balance) }
+                    : {}),
+                })),
+              }
+            : {}),
+        };
+        setResults({ kind: "simulation", ...(await simulate(request)) });
+      } finally {
+        setRunning(false);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingShare, selected.chainId]);
 
   async function run() {
     if (!detected || detected.kind === "unknown") return;
@@ -233,11 +307,21 @@ export function Troubleshooter() {
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Troubleshoot a transaction</CardTitle>
-          <CardDescription>
-            Paste a tx hash, signed raw tx, calldata, or a JSON call request —
-            the input type is detected automatically.
-          </CardDescription>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <CardTitle>Troubleshoot a transaction</CardTitle>
+              <CardDescription>
+                Paste a tx hash, signed raw tx, calldata, or a JSON call request
+                — the input type is detected automatically.
+              </CardDescription>
+            </div>
+            <RecipePicker
+              onApply={(t, data) => {
+                setTo(t);
+                setRaw(data);
+              }}
+            />
+          </div>
         </CardHeader>
         <CardContent className="grid gap-4">
           <Textarea

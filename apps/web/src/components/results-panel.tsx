@@ -22,7 +22,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DecodedCallView, DecodedRevertView } from "./decoded-view";
 import { ProbePanel } from "./probe-panel";
+import { ShareActions } from "./share-actions";
 import { AssetDiffView, TraceView } from "./trace-view";
+
+export interface ShareContext {
+  chainId: number;
+  chainName: string;
+  rpcUrl?: string;
+}
 
 export interface DecodedBundle {
   call: DecodedCall | null;
@@ -55,6 +62,7 @@ export type Results =
       outcome: SimulateOutcome;
       decoded?: DecodedBundle;
       traceBundle?: TraceBundle;
+      share?: ShareContext;
       note?: string;
     };
 
@@ -281,6 +289,15 @@ export function ResultsPanel({
           }}
           note={results.note}
         />
+        {results.share ? (
+          <ShareActions
+            share={results.share}
+            request={results.request}
+            outcome={results.outcome}
+            decodedCall={results.decoded?.call ?? null}
+            decodedRevert={results.decoded?.revert ?? null}
+          />
+        ) : null}
         {results.outcome.status === "revert" ? (
           <ProbePanel
             request={results.request}
